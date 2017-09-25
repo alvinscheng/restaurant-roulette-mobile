@@ -3,6 +3,23 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button } from 'native-base'
 
 export default class App extends React.Component {
+  state = {
+    restaurant: {
+      name: 'restaurant_name'
+    }
+  }
+
+  getRestaurant() {
+    navigator.geolocation.getCurrentPosition(position => {
+      const { latitude, longitude } = position.coords
+      fetch('https://restaurant-roulette-api.herokuapp.com/restaurant?latitude=' + latitude + '&longitude=' + longitude, { method: 'GET' })
+        .then(response => response.json())
+        .then(restaurant => {
+          this.setState({ restaurant })
+        })
+    })
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -19,11 +36,15 @@ export default class App extends React.Component {
           <View>
             <Button bordered info
               style={styles.getStartedButton}
-              onPress={() =>
-                console.log('hi')
-              }>
+              onPress={ this.getRestaurant.bind(this) }>
               <Text>Click Me!</Text>
             </Button>
+          </View>
+
+          <View>
+            <Text>
+              { this.state.restaurant.name }
+            </Text>
           </View>
 
         </ScrollView>
